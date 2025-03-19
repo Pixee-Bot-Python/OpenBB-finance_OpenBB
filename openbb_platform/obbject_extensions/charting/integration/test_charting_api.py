@@ -8,6 +8,7 @@ import requests
 from extensions.tests.conftest import parametrize
 from openbb_core.env import Env
 from openbb_core.provider.utils.helpers import get_querystring
+from security import safe_requests
 
 
 @pytest.fixture(scope="session")
@@ -40,7 +41,7 @@ def get_equity_data():
         return data["stocks_data"]
 
     url = "http://0.0.0.0:8000/api/v1/equity/price/historical?symbol=AAPL&provider=fmp"
-    result = requests.get(url, headers=get_headers(), timeout=10)
+    result = safe_requests.get(url, headers=get_headers(), timeout=10)
     data["stocks_data"] = result.json()["results"]
 
     return data["stocks_data"]
@@ -65,7 +66,7 @@ def test_charting_equity_price_historical(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/equity/price/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=40)
+    result = safe_requests.get(url, headers=headers, timeout=40)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -96,7 +97,7 @@ def test_charting_currency_price_historical(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/currency/price/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=40)
+    result = safe_requests.get(url, headers=headers, timeout=40)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -127,7 +128,7 @@ def test_charting_etf_historical(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/etf/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=40)
+    result = safe_requests.get(url, headers=headers, timeout=40)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -158,7 +159,7 @@ def test_charting_index_price_historical(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/index/price/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=40)
+    result = safe_requests.get(url, headers=headers, timeout=40)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -189,7 +190,7 @@ def test_charting_crypto_price_historical(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/crypto/price/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=40)
+    result = safe_requests.get(url, headers=headers, timeout=40)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -560,7 +561,7 @@ def test_charting_economy_fred_series(params, headers):
 
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/economy/fred_series?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10)
+    result = safe_requests.get(url, headers=headers, timeout=10)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -600,7 +601,7 @@ def test_charting_technical_relative_rotation(params):
     )
     data_query_str = get_querystring(data_params, [])
     data_url = f"http://0.0.0.0:8000/api/v1/equity/price/historical?{data_query_str}"
-    data_result = requests.get(data_url, headers=get_headers(), timeout=10).json()["results"]
+    data_result = safe_requests.get(data_url, headers=get_headers(), timeout=10).json()["results"]
     body = json.dumps({"data": data_result})
     query_str = get_querystring(params, ["data"])
     url = f"http://0.0.0.0:8000/api/v1/technical/relative_rotation?{query_str}"
@@ -635,7 +636,7 @@ def test_charting_equity_price_performance(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"limit": 4, "orientation": "h"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/equity/price/performance?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -667,7 +668,7 @@ def test_charting_etf_price_performance(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"orientation": "v"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/etf/price_performance?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -699,7 +700,7 @@ def test_charting_etf_holdings(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"orientation": "v", "limit": 10}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/etf/holdings?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -738,7 +739,7 @@ def test_charting_fixedincome_government_yield_curve(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"title": "test chart"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/fixedincome/government/yield_curve?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -771,7 +772,7 @@ def test_charting_derivatives_futures_historical(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"title": "test chart"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/derivatives/futures/historical?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -811,7 +812,7 @@ def test_charting_derivatives_futures_curve(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"title": "test chart"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/derivatives/futures/curve?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
@@ -844,7 +845,7 @@ def test_charting_equity_historical_market_cap(params, headers):
     body = (json.dumps({"extra_params": {"chart_params": {"title": "test chart"}}}),)
     query_str = get_querystring(params, [])
     url = f"http://0.0.0.0:8000/api/v1/equity/historical_market_cap?{query_str}"
-    result = requests.get(url, headers=headers, timeout=10, json=body)
+    result = safe_requests.get(url, headers=headers, timeout=10, json=body)
     assert isinstance(result, requests.Response)
     assert result.status_code == 200
 
